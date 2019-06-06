@@ -20,7 +20,7 @@ var same_file_list []string
 //var file_md5 = make(map[string]string)
 
 func init()  {
-	s := "D:\\gocode\\src\\github.com\\yangyouwei\\quchong\\test"
+	s := "C:\\Users\\yyw\\go\\src\\github.com\\yangyouwei\\quchong\\test"
 	source_path, _ = filepath.Abs(s)
 	a := strings.LastIndex(source_path, "\\") //如果是linux系统使用 / 为分隔符,wondows 使用 \\
 	rs := []rune(source_path)
@@ -37,10 +37,10 @@ func init()  {
 func main()  {
 	fn := getfilelist(source_path)
 	file_list = *fn
-	fmt.Println(file_list)
 
 	sn := diff_md5(file_list)
 	same_file_list = *sn
+
 	move_file(same_file_list,Parents_dir,Same_file_dir)
 }
 
@@ -79,17 +79,21 @@ func GetAllFile(pathname string, s []string) ([]string, error) {
 func diff_md5(fl []string) *[]string{
 	f := make(map[string]string)
 	var s []string
+
 	for _,k := range fl {
 		a := md5_sum(k)
-
-		if v, ok := f[a]; ok {
-			fmt.Println("true")
-			s = append(s,v)
+		if _, ok := f[a]; ok {
+			//fmt.Println("true")
+			s = append(s,k)
 		}else{
-			fmt.Println("false")
+			//fmt.Println("false")
 			f[a] = k
 		}
 	}
+	fmt.Println("map : ", f)
+	fmt.Println("slice :",s)
+	//fmt.Println("file_list : ",fl)
+	//fmt.Println("same file list : ",s)
 	return &s
 }
 
@@ -102,11 +106,9 @@ func move_file(same_file []string, parents_dir string, same_file_path string) {
 		p1 := []rune(path.Dir(v))
 		//取出目标目录文件的子目录
 		sub_path := p1[n:]
-		fmt.Println(string(sub_path))
 
 		//需要在存放相同文件的目录里创建文件相应的层级目录
 		d_patch := same_file_path + string(sub_path)
-		fmt.Println(d_patch)
 
 		err := os.MkdirAll(d_patch, os.ModePerm)
 		if err != nil {
@@ -117,7 +119,6 @@ func move_file(same_file []string, parents_dir string, same_file_path string) {
 		//移动文件
 		err = os.Rename(v, d_patch+"\\"+filename)
 		if err != nil {
-			fmt.Println("mv")
 			log.Println(err)
 			break
 		}
