@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/md5"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,8 +21,14 @@ var same_file_list []string
 //var file_md5 = make(map[string]string)
 
 func init()  {
-	s := "C:\\Users\\yyw\\go\\src\\github.com\\yangyouwei\\quchong\\test"
-	source_path, _ = filepath.Abs(s)
+	s := flag.String("f","","-f C:\\Users\\yyw\\go\\src\\github.com\\yangyouwei\\quchong\\test 访问url")
+	flag.Parse()
+
+	if *s == "" {
+		flag.Usage()
+		panic("process exsit!")
+	}
+	source_path, _ = filepath.Abs(*s)
 	a := strings.LastIndex(source_path, "\\") //如果是linux系统使用 / 为分隔符,wondows 使用 \\
 	rs := []rune(source_path)
 	parents_dir := rs[:a]
@@ -90,8 +97,8 @@ func diff_md5(fl []string) *[]string{
 			f[a] = k
 		}
 	}
-	fmt.Println("map : ", f)
-	fmt.Println("slice :",s)
+	//fmt.Println("map : ", f)
+	//fmt.Println("slice :",s)
 	//fmt.Println("file_list : ",fl)
 	//fmt.Println("same file list : ",s)
 	return &s
